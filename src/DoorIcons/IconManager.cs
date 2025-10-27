@@ -48,9 +48,18 @@ namespace DoorIcons
             var go = new GameObject("DoorIcon");
             var renderer = go.FindOrAddComponent<SpriteRenderer>();
 
+            State.DoorIcons.Add
+            (
+                door,
+                go
+            );
+
             UpdateIcon(door);
 
             renderer.material.renderQueue = 5000;
+
+            // Apply the user's preferred transparency
+            renderer.color = renderer.color with { a = Options.Instance.Transparency };
 
             Util.KInstantiate(renderer, GameScreenManager.Instance.worldSpaceCanvas);
 
@@ -225,6 +234,13 @@ namespace DoorIcons
 
                 if (renderer != null)
                 {
+                    if ((targetState == ExtendedDoorState.Open && !Options.Instance.ShowOnOpenDoors) ||
+                        (targetState == ExtendedDoorState.Locked && !Options.Instance.ShowOnLockedDoors))
+                    {
+                        renderer.enabled = false;
+                        return;
+                    }
+
                     if (State.DoorSprites.TryGetValue(targetState, out var newSprite))
                     {
                         renderer.sprite = newSprite;

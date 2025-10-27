@@ -24,11 +24,11 @@ namespace DoorIcons.Patches
             Door
         >("doorTarget");
 
-        [HarmonyPatch(typeof(Workable))]
+        [HarmonyPatch(typeof(Door))]
         [HarmonyPatch("OnSpawn")]
         public static class Door_OnSpawn
         {
-            public static void Postfix(Workable __instance)
+            public static void Postfix(Door __instance)
             {
                 try
                 {
@@ -37,17 +37,11 @@ namespace DoorIcons.Patches
                         return;
                     }
 
-                    var door = __instance.GetComponent<Door>();
+                    var door = __instance;
 
                     if (door != null && !State.DoorIcons.ContainsKey(door))
                     {
                         var icon = IconManager.CreateIcon(door);
-
-                        State.DoorIcons.Add
-                        (
-                            door,
-                            icon
-                        );
 
                         __instance.gameObject.Subscribe((int)GameHashes.LogicEvent, data => IconManager.UpdateIcon(door));
                         __instance.gameObject.Subscribe((int)GameHashes.DoorStateChanged, data => IconManager.UpdateIcon(door));
